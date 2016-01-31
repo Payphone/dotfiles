@@ -5,20 +5,20 @@
 (set-default-font "9x15")
 (setq make-backup-files nil)
 (setq-default indent-tabs-mode nil)
-(add-hook 'prog-mode-hook 'linum-mode)
-(setq linum-format "%4d")
-(global-hl-line-mode t)
-(blink-cursor-mode 0)
-(setq fill-column 80)
+(setq inhibit-startup-message t)
+(setq initial-scratch-message nil)
+(setq initial-major-mode 'org-mode)
+
 
 ;; Interface
 (xterm-mouse-mode 1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(setq inhibit-startup-message t)
-(setq initial-scratch-message nil)
-(setq initial-major-mode 'org-mode)
+(add-hook 'prog-mode-hook 'linum-mode)
+(setq linum-format "%4d")
+(global-hl-line-mode t)
+(blink-cursor-mode 0)
 (setq line-number-mode t)
 (setq column-number-mode t)
 
@@ -40,8 +40,15 @@
 ;; Packages
 ;;------------------------------------------------------------------------------
 
+(use-package helm
+  :ensure t
+  :init
+  (helm-mode 1))
+
 ;; Colemak vimish keybinds
 (use-package evil
+  :ensure t
+  :ensure helm
   :init
   (evil-mode 1)
   :config
@@ -68,10 +75,11 @@
 
   (define-general-key "s" 'evil-insert-state)
   (define-general-key "t" 'evil-delete)
-  (define-general-key ";" 'evil-ex))
+  (define-general-key ";" 'helm-M-x))
 
 (use-package evil-leader
   :ensure t
+  :ensure helm
   :init
   (global-evil-leader-mode)
   :config
@@ -80,14 +88,18 @@
     "wh"  'evil-window-left
     "wn"  'evil-window-down
     "we"  'evil-window-up
-    "wi"  'evil-window-right)
+    "wi"  'evil-window-right
+    "b"   'helm-buffers-list
+    "ff"  'helm-find-files
+    "fs"  'save-buffer)
   (evil-leader/set-key-for-mode 'lisp-mode
-    "ef" 'slime-eval-defun
-    "er" 'slime-eval-region
-    "eb" 'slime-eval-buffer
-    "cf" 'slime-compile-defun
-    "cr" 'slime-compile-region
-    "si" 'slime))
+    "mef" 'slime-eval-defun
+    "mer" 'slime-eval-region
+    "meb" 'slime-eval-buffer
+    "mcf" 'slime-compile-defun
+    "mcr" 'slime-compile-region
+    "msi" 'slime
+    "msc" 'slime-connect))
 
 (use-package solarized-theme
   :ensure t
@@ -98,6 +110,7 @@
   :init
   (powerline-default-theme))
 
+;; Highlight whitespace, tabs, and lines longer than 80 characters
 (use-package whitespace
   :init
   (global-whitespace-mode t)
@@ -105,6 +118,7 @@
   (setq whitespace-line-column 80)
   (setq whitespace-style '(face tabs lines-tail trailing)))
 
+;; Spell checking for text mode
 (use-package flyspell
   :ensure t
   :config
@@ -138,7 +152,8 @@
                          '(lambda (action pair pos-before)
                             (hl-paren-color-update))))))
 
-(use-package aggresive-indent
+(use-package aggressive-indent
+  :ensure t
   :init
   (global-aggressive-indent-mode 1)
   :config
