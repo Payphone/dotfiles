@@ -43,12 +43,15 @@
 (use-package helm
   :ensure t
   :init
-  (helm-mode 1))
+  (helm-mode 1)
+  :config
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action))
 
 ;; Colemak vimish keybinds
 (use-package evil
   :ensure t
   :ensure helm
+  :ensure sly
   :init
   (evil-mode 1)
   :config
@@ -75,36 +78,50 @@
 
   (define-general-key "s" 'evil-insert-state)
   (define-general-key "t" 'evil-delete)
-  (define-general-key ";" 'helm-M-x))
+  (define-general-key ";" 'helm-M-x)
+  (define-key evil-insert-state-map (kbd "TAB") 'sly-complete-symbol))
 
 (use-package evil-leader
   :ensure t
   :ensure helm
+  :ensure smartparens
   :init
   (global-evil-leader-mode)
   :config
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
+    ;; Window bindings
     "wh"  'evil-window-left
     "wn"  'evil-window-down
     "we"  'evil-window-up
     "wi"  'evil-window-right
-    "b"   'helm-buffers-list
+    ;; Buffer bindings
+    "bb"  'helm-buffers-list
+    "bn"  'next-buffer
+    "bp"  'previous-buffer'
+    ;; File bindings
     "ff"  'helm-find-files
-    "fs"  'save-buffer)
+    "fs"  'save-buffer
+    "fq"  'kill-buffer
+    ;; Git bindings
+    "gg"  'magit-status)
   (evil-leader/set-key-for-mode 'lisp-mode
-    "mef" 'slime-eval-defun
-    "mer" 'slime-eval-region
-    "meb" 'slime-eval-buffer
-    "mcf" 'slime-compile-defun
-    "mcr" 'slime-compile-region
-    "msi" 'slime
-    "msc" 'slime-connect))
+    ;; Sly bindings
+    "mef" 'sly-eval-defun
+    "mer" 'sly-eval-region
+    "meb" 'sly-eval-buffer
+    "mcf" 'sly-compile-defun
+    "mcr" 'sly-compile-region
+    "msi" 'sly
+    "msc" 'sly-connect)
+  (evil-leader/set-key-for-mode 'sly-db-mode
+    "mda" 'sly-db-abort
+    "mdc" 'sly-db-continue))
 
-(use-package solarized-theme
-  :ensure t
-  :init
-  (load-theme 'solarized-dark t))
+  (use-package solarized-theme
+    :ensure t
+    :init
+    (load-theme 'solarized-dark t))
 
 (use-package powerline
   :init
@@ -125,11 +142,18 @@
   (add-hook 'text-mode-hook 'flyspell-mode))
 
 ;; Slime
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
-(setq inferior-lisp-program "sbcl")
+(use-package sly-autoloads
+  :ensure sly
+  :config
+  (setq inferior-lisp-program "sbcl")
+  (setq sly-lisp-implementations
+        '((sbcl ("sbcl" "--core" "sbcl.core-for-sly") :coding-system utf-8-unix)))
+  (add-hook 'sly-connected-hook (lambda ()
+                                  (previous-buffer)
+                                  (pop-to-buffer (get-buffer "*sly-mrepl for sbcl*")))))
 
 ;;
-;; Paren highlighting and indentation
+;; Paren highlighting, indentation, and navigation
 
 (show-paren-mode t)
 
@@ -154,7 +178,9 @@
 
 (use-package aggressive-indent
   :ensure t
-  :init
-  (global-aggressive-indent-mode 1)
   :config
-  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
+  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
+
+(use-package magit
+  :ensure t)
