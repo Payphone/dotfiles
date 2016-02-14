@@ -2,7 +2,7 @@
 ;; General Configuration
 ;;------------------------------------------------------------------------------
 
-(set-default-font "9x15")
+(set-default-font "Terminus-13")
 (setq make-backup-files nil)
 (setq-default indent-tabs-mode nil)
 (setq inhibit-startup-message t)
@@ -176,3 +176,6 @@
 
 (use-package magit
   :ensure t)
+(use-package pretty-mode
+  :init
+  (global-pretty-mode t))
