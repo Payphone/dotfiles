@@ -9,7 +9,6 @@
 (setq initial-scratch-message nil)
 (setq initial-major-mode 'org-mode)
 
-
 ;; Interface
 (xterm-mouse-mode 1)
 (tool-bar-mode -1)
@@ -68,13 +67,13 @@
 
   (define-general-key (kbd "C-i") 'evil-forward-word-begin)
   (define-general-key (kbd "C-h") 'evil-backward-word-begin)
-  (define-general-key "N" 'evil-scroll-page-down)
-  (define-general-key "E" 'evil-scroll-page-up)
+  (define-general-key (kbd "C-n") 'evil-scroll-page-down)
+  (define-general-key (kbd "C-e") 'evil-scroll-page-up)
   (define-general-key "I" 'evil-end-of-line)
   (define-general-key "H" 'back-to-indentation)
 
-  (define-general-key (kbd "C-n") 'evil-goto-line)
-  (define-general-key (kbd "C-e") 'evil-goto-first-line)
+  (define-general-key "N" 'evil-goto-line)
+  (define-general-key "E" 'evil-goto-first-line)
 
   (define-general-key "s" 'evil-insert-state)
   (define-general-key "t" 'evil-delete)
@@ -146,11 +145,9 @@
   :ensure sly
   :config
   (setq inferior-lisp-program "sbcl")
-  (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "--core" "sbcl.core-for-sly") :coding-system utf-8-unix)))
   (add-hook 'sly-connected-hook (lambda ()
                                   (previous-buffer)
-                                  (pop-to-buffer (get-buffer "*sly-mrepl for sbcl*")))))
+                                  (pop-to-buffer "*sly-mrepl for sbcl*"))))
 
 ;;
 ;; Paren highlighting, indentation, and navigation
@@ -168,19 +165,14 @@
 (use-package highlight-parentheses
   :ensure t)
 
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (highlight-parentheses-mode)
-             (setq autopair-handle-action-fns
-                   (list 'autopair-default-handle-action
-                         '(lambda (action pair pos-before)
-                            (hl-paren-color-update))))))
-
 (use-package aggressive-indent
   :ensure t
   :config
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
+
+;;
+;; Misc.
 
 (use-package magit
   :ensure t)
