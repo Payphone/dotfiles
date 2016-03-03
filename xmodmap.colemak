@@ -12,7 +12,7 @@ keycode  16 =            7     ampersand              eth               ETH
 keycode  17 =            8      asterisk            thorn             THORN
 keycode  18 =            9          less   leftsinglequotemark   leftdoublequotemark
 keycode  19 =            0        greater rightsinglequotemark   rightdoublequotemark
-keycode  20 =        minus    underscore           endash            emdash
+keycode  20 =        question underscore           endash            emdash
 keycode  21 =        equal          plus         multiply          division
 
 keycode  24 =            q             Q       adiaeresis        Adiaeresis
@@ -50,13 +50,13 @@ keycode  57 =            k             K   dead_abovering        asciitilde
 keycode  58 =            m             M      dead_macron        asciitilde
 keycode  59 =        comma     parenleft     dead_cedilla        asciitilde
 keycode  60 =       period    parenright    dead_abovedot        asciitilde
-keycode  61 =        slash      question     questiondown        asciitilde
+keycode  61 =        slash         minus     questiondown        asciitilde
 
 clear lock
 clear control
 keycode  66 =    Control_L     Control_R        BackSpace         BackSpace
 add control = Control_L Control_R
 
-keycode  94 =        minus    underscore           endash            emdash
+keycode  94 =        question underscore           endash            emdash
 keycode  65 =        space         space            space      nobreakspace
 keycode 113 =  Mode_switch   Mode_switch
