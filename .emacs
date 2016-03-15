@@ -2,8 +2,13 @@
 ;; General Configuration
 ;;------------------------------------------------------------------------------
 
-(set-default-font "Terminus-13")
-(setq make-backup-files nil)
+(setq backup-by-copying t
+      backup-directory-alist
+      '(("." . "~/.saves"))
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
 (setq-default indent-tabs-mode nil)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
@@ -41,6 +46,7 @@
 
 (use-package helm
   :ensure t
+  :ensure helm-projectile
   :init
   (helm-mode 1)
   :config
@@ -50,7 +56,6 @@
 (use-package evil
   :ensure t
   :ensure helm
-  :ensure sly
   :init
   (evil-mode 1)
   :config
@@ -78,7 +83,9 @@
   (define-general-key "s" 'evil-insert-state)
   (define-general-key "t" 'evil-delete)
   (define-general-key ";" 'helm-M-x)
-  (define-key evil-insert-state-map (kbd "TAB") 'sly-complete-symbol))
+  (define-general-key "!" 'shell-command)
+
+  (define-general-key (kbd "<f5>") 'compile))
 
 (use-package evil-leader
   :ensure t
@@ -97,34 +104,31 @@
     ;; Buffer bindings
     "bb"  'helm-buffers-list
     "bn"  'next-buffer
-    "bp"  'previous-buffer'
+    "bp"  'previous-buffer
+    "bq"  'kill-this-buffer
     ;; File bindings
     "ff"  'helm-find-files
     "fs"  'save-buffer
-    "fq"  'kill-buffer
-    ;; Git bindings
-    "gg"  'magit-status)
+    ;; Misc bindings
+    "gg"  'magit-status
+    "ss"  'ansi-term)
   (evil-leader/set-key-for-mode 'lisp-mode
-    ;; Sly bindings
-    "mef" 'sly-eval-defun
-    "mer" 'sly-eval-region
-    "meb" 'sly-eval-buffer
-    "mcf" 'sly-compile-defun
-    "mcr" 'sly-compile-region
-    "msi" 'sly
-    "msc" 'sly-connect)
-  (evil-leader/set-key-for-mode 'sly-db-mode
-    "mda" 'sly-db-abort
-    "mdc" 'sly-db-continue))
+    ;; Slime bindings
+    "mef" 'slime-eval-defun
+    "mer" 'slime-eval-region
+    "meb" 'slime-eval-buffer
 
-  (use-package solarized-theme
-    :ensure t
-    :init
-    (load-theme 'solarized-dark t))
+    "mcb" 'slime-comgile-buffer
+    "mcf" 'slime-compile-defun
+    "mcr" 'slime-compile-region
 
-(use-package powerline
+    "msi" 'slime
+    "msc" 'slime-connect))
+
+(use-package solarized-theme
+  :ensure t
   :init
-  (powerline-default-theme))
+  (load-theme 'solarized-dark t))
 
 ;; Highlight whitespace, tabs, and lines longer than 80 characters
 (use-package whitespace
@@ -140,30 +144,23 @@
   :config
   (add-hook 'text-mode-hook 'flyspell-mode))
 
-;; Slime
-(use-package sly-autoloads
-  :ensure sly
-  :config
-  (setq inferior-lisp-program "sbcl")
-  (add-hook 'sly-connected-hook (lambda ()
-                                  (previous-buffer)
-                                  (pop-to-buffer "*sly-mrepl for sbcl*"))))
-
 ;;
-;; Paren highlighting, indentation, and navigation
+;; Lisp stuff
 
 (show-paren-mode t)
+(add-hook 'lisp-mode-hook 'pretty-lambda-mode)
+
+(use-package slime
+  :ensure t
+  :config
+  (setq inferior-lisp-program "sbcl")
+  (setq slime-contribs '(slime-fancy slime-banner slime-asdf))
+  (slime-setup))
 
 (use-package rainbow-delimiters
   :ensure t
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-
-(use-package autopair
-  :ensure t)
-
-(use-package highlight-parentheses
-  :ensure t)
 
 (use-package aggressive-indent
   :ensure t
@@ -172,10 +169,35 @@
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
 
 ;;
+;; C Stuff
+
+(setq c-toggle-auto-newline 1)
+(setq-default c-basic-offset 4)
+
+(use-package semantic
+  :init
+  (use-package semantic/bovine/gcc)
+  :config
+  (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
+  (add-to-list 'semantic-default-submodes 'global-semantic-idle-local-symbol-highlight-mode)
+  (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+  (add-to-list 'semantic-default-submodes 'global-semantic-idle-summary-mode)
+  (semantic-mode 1)
+  (global-ede-mode t)
+  (ede-enable-generic-projects))
+
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'c-mode-hook #'flycheck-mode))
+
+(use-package company
+  :ensure t
+  :config
+  (add-hook 'c-mode-hook #'company-mode))
+
+;;
 ;; Misc.
 
 (use-package magit
   :ensure t)
-(use-package pretty-mode
-  :init
-  (global-pretty-mode t))
