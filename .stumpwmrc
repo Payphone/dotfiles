@@ -1,0 +1,43 @@
+;; Zenburn Colors
+(setf *colors* '("#4d4d4d"
+                 "#cc9393"
+                 "#60b48a"
+                 "#f0dfaf"
+                 "#506070"
+                 "#dc8cc3"
+                 "#8cd0d3"
+                 "#dcdccc"))
+(update-color-map (current-screen))
+
+(set-win-bg-color "#3f3f3f")
+(set-bg-color "#3f3f3f")
+(set-fg-color "#dcdccc")
+(set-border-color "#4d4d4d")
+(setf *window-border-style* :Thin)
+(set-focus-color "#dcdccc")
+(set-unfocus-color "#4d4d4d")
+(set-font "-lucy-tewi-medium-*-*-*-11-*-*-*-*-*-*-*")
+
+;; Commands
+(defcommand urxvt () ()
+  "Start an urxvt instance or switch to it, if it is already running."
+  (run-shell-command "urxvt"))
+
+(defcommand weather () ()
+  "Displays AnsiWeather."
+  (message "~A" (run-shell-command "ansiweather -a false -l Wasilla -u imperial -p false" t)))
+
+;; Swank
+(require :swank)
+(swank-loader:init)
+(swank:create-server :port 4004
+                     :style swank:*communication-style*
+                     :dont-close t)
+
+;; Keybindings
+(define-key *root-map* (kbd "c") "urxvt")
+(define-key *root-map* (kbd "e") "exec emacsclient -c ")
+(define-key *root-map* (kbd "C-w") "weather")
+
+(ql:quickload :mpd)
+(define-key *root-map* (kbd "C-m") 'mpd:*mpd-map*)

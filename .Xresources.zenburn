@@ -1,0 +1,66 @@
+URxvt.font: -lucy-tewi-medium-*-*-*-11-*-*-*-*-*-*-* 
+urxvt*boldFont: -lucy-tewi-bold-*-*-*-11-*-*-*-*-*-*-*
+Emacs.font: -lucy-tewi-medium-*-*-*-11-*-*-*-*-*-*-*
+
+!{{{ URXVT
+!
+! General
+urxvt*termName:           rxvt-unicode-256color
+urxvt*scrollBar:         false
+urxvt*saveLines:         65535
+urxvt*geometry:          80x25
+urxvt.intensityStyles:   false
+!
+! Extensions
+urxvt*perl-ext-common: default,matcher,searchable-scrollback,readline
+URxvt.url-launcher: /usr/local/bin/xdg-open
+urxvt*matcher.button:  1
+! Catch ugly URLs
+urxvt*cutchars:        '"'()*<>[]{|}
+!
+! Appearance
+!
+!
+*.foreground:  #dcdccc
+*.background:  #3f3f3f
+*.cursorColor: #dcdccc
+!
+! Black
+*.color0:      #4d4d4d
+*.color8:      #709080
+!
+! Red
+*.color1:      #cc9393
+*.color9:      #dca3a3
+!
+! Green
+*.color2:      #7f9f7f
+!!*.color10:     #c3bf9f
+*.color10:     #bfebbf
+!
+! Yellow
+*.color3:      #f0dfaf
+*.color11:     #e0cf9f
+!
+! Blue
+*.color4:      #506070
+!!*.color12:     #7cb8bb
+*.color12:     #93e0e3
+
+!
+! Magenta
+*.color5:      #dc8cc3
+*.color13:     #ec93d3
+!
+! Cyan
+*.color6:      #8cd0d3
+*.color14:     #93e0e3
+!
+! White
+*.color7:      #dcdccc
+*.color15:     #ffffff
+!
+! Bold, Italic, Underline
+*.colorBD:     #dcdccc
+!*.colorIT:
+!*.colorUL:
