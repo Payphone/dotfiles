@@ -27,7 +27,7 @@
   "Displays AnsiWeather."
   (message "~A" (run-shell-command "ansiweather -a false -l Wasilla -u imperial -p false" t)))
 
-;; Swank
+;; Swank Server
 (require :swank)
 (swank-loader:init)
 (swank:create-server :port 4004
@@ -36,8 +36,9 @@
 
 ;; Keybindings
 (define-key *root-map* (kbd "c") "urxvt")
-(define-key *root-map* (kbd "e") "exec emacsclient -c ")
+(define-key *root-map* (kbd "e") "exec emacsclient -c")
 (define-key *root-map* (kbd "C-w") "weather")
 
-(ql:quickload :mpd)
-(define-key *root-map* (kbd "C-m") 'mpd:*mpd-map*)
+(load-module "stumpd")
+(use-package :stumpd)
+(define-key *root-map* (kbd "m") '*mpd-playback-map*)
