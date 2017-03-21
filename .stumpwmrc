@@ -19,13 +19,36 @@
 (set-font "-lucy-tewi-medium-*-*-*-11-*-*-*-*-*-*-*")
 
 ;; Commands
+
 (defcommand urxvt () ()
   "Start an urxvt instance or switch to it, if it is already running."
   (run-shell-command "urxvt"))
 
 (defcommand weather () ()
   "Displays AnsiWeather."
-  (message "~A" (run-shell-command "ansiweather -a false -l Wasilla -u imperial -p false" t)))
+  (message (run-shell-command "ansiweather -a false -l Wasilla -u imperial -p false" t)))
+
+;; Surf
+
+(defcommand surf (address) ((:string "URL: "))
+  "Opens surf to the specified address."
+  (run-shell-command (format nil "surf -g -b -p ~A" address)))
+
+(defcommand surf-search (engine search) ((:string "Engine: ") (:string "Search: "))
+  "Searches the specified search engine."
+  (surf (run-shell-command (format nil "surfraw -browser=echo ~A ~A" engine search) t)))
+
+;; PwSafe
+
+(defcommand password (account password) ((:string "Account: ") (:string "Password: "))
+  "Copies password for the specified account to the clipboard."
+  (run-shell-command (format nil "echo ~A | pwsafe -p ~A" password account))
+  (message "Copied to clipboard."))
+
+(defcommand username (account password) ((:string "Account: ") (:string "Password: "))
+  "Copies password for the specified account to the clipboard."
+  (run-shell-command (format nil "echo ~A | pwsafe -u ~A" password account))
+  (message "Copied to clipboard."))
 
 ;; Swank Server
 (require :swank)
@@ -35,10 +58,20 @@
                      :dont-close t)
 
 ;; Keybindings
+
 (define-key *root-map* (kbd "c") "urxvt")
 (define-key *root-map* (kbd "e") "exec emacsclient -c")
 (define-key *root-map* (kbd "C-w") "weather")
+(define-key *root-map* (kbd "P") "password")
+(define-key *root-map* (kbd "U") "username")
 
 (load-module "stumpd")
 (use-package :stumpd)
 (define-key *root-map* (kbd "m") '*mpd-playback-map*)
+
+(defvar *surf-map*
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "g") "surf")
+    (define-key map (kbd "s") "surf-search")
+    map))
+(define-key *root-map* (kbd "C-s") '*surf-map*)
