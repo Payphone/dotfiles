@@ -34,18 +34,18 @@
   "Opens surf to the specified address."
   (run-shell-command (format nil "surf -g -b -p ~A" address)))
 
-(defcommand surf-search (engine search) ((:string "Engine: ") (:string "Search: "))
+(defcommand surf-search (search) ((:string "Search: "))
   "Searches the specified search engine."
-  (surf (run-shell-command (format nil "surfraw -browser=echo ~A ~A" engine search) t)))
+  (surf (run-shell-command (format nil "surfraw -browser=echo ~A ~A" "duckduckgo" search) t)))
 
 ;; PwSafe
 
-(defcommand password (account password) ((:string "Account: ") (:string "Password: "))
+(defcommand password (account password) ((:string "Account: ") (:password "Password: "))
   "Copies password for the specified account to the clipboard."
   (run-shell-command (format nil "echo ~A | pwsafe -p ~A" password account))
   (message "Copied to clipboard."))
 
-(defcommand username (account password) ((:string "Account: ") (:string "Password: "))
+(defcommand username (account password) ((:string "Account: ") (:password "Password: "))
   "Copies password for the specified account to the clipboard."
   (run-shell-command (format nil "echo ~A | pwsafe -u ~A" password account))
   (message "Copied to clipboard."))
@@ -65,13 +65,12 @@
 (define-key *root-map* (kbd "P") "password")
 (define-key *root-map* (kbd "U") "username")
 
+(define-key *root-map* (kbd "C-s") "surf-search")
+
 (load-module "stumpd")
 (use-package :stumpd)
-(define-key *root-map* (kbd "m") '*mpd-playback-map*)
+(define-key *root-map* (kbd "m") 'stumpd:*mpd-playback-map*)
 
-(defvar *surf-map*
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "g") "surf")
-    (define-key map (kbd "s") "surf-search")
-    map))
-(define-key *root-map* (kbd "C-s") '*surf-map*)
+(load-module "dictionary")
+
+(define-key *root-map* (kbd "d") "get-definition")
