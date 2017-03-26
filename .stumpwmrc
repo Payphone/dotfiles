@@ -50,6 +50,13 @@
   (run-shell-command (format nil "echo ~A | pwsafe -u ~A" password account))
   (message "Copied to clipboard."))
 
+;; Calendar
+
+(defcommand calendar () ()
+  "Displays a calendar for the current month, and any events associated with the
+  current day."
+  (message "~A~%~A" (run-shell-command "cal" t) (run-shell-command "calendar" t)))
+
 ;; Swank Server
 (require :swank)
 (swank-loader:init)
@@ -64,6 +71,7 @@
 (define-key *root-map* (kbd "C-w") "weather")
 (define-key *root-map* (kbd "P") "password")
 (define-key *root-map* (kbd "U") "username")
+(define-key *root-map* (kbd "C-c") "calendar")
 
 (define-key *root-map* (kbd "C-s") "surf-search")
 
