@@ -42,12 +42,12 @@
 
 (defcommand password (account password) ((:string "Account: ") (:password "Password: "))
   "Copies password for the specified account to the clipboard."
-  (run-shell-command (format nil "echo ~A | pwsafe -p ~A" password account))
+  (run-shell-command (format nil "echo '~A' | pwsafe -p ~A" password account))
   (message "Copied to clipboard."))
 
 (defcommand username (account password) ((:string "Account: ") (:password "Password: "))
   "Copies password for the specified account to the clipboard."
-  (run-shell-command (format nil "echo ~A | pwsafe -u ~A" password account))
+  (run-shell-command (format nil "echo '~A' | pwsafe -u ~A" password account))
   (message "Copied to clipboard."))
 
 ;; Calendar
@@ -55,7 +55,20 @@
 (defcommand calendar () ()
   "Displays a calendar for the current month, and any events associated with the
   current day."
-  (message "~A~%~A" (run-shell-command "cal" t) (run-shell-command "calendar" t)))
+  (message "~A~%~A" (run-shell-command "cal" t) (run-shell-command "calendar -A 7" t)))
+
+;; Mail
+
+(defun list-directory (folder)
+  "Returns a list of files in the directory."
+  (directory
+   (make-pathname :type :wild :name :wild
+                  :directory (pathname-directory folder))))
+
+(defcommand mail () ()
+  "Displays the number of new emails."
+  (let ((emails (length (list-directory #P"~/Maildir/new/"))))
+    (message "~A new email(s)." (if (> emails 0) emails "No"))))
 
 ;; Swank Server
 (require :swank)
@@ -72,6 +85,7 @@
 (define-key *root-map* (kbd "P") "password")
 (define-key *root-map* (kbd "U") "username")
 (define-key *root-map* (kbd "C-c") "calendar")
+(define-key *root-map* (kbd "M") "mail")
 
 (define-key *root-map* (kbd "C-s") "surf-search")
 
